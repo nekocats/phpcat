@@ -1,14 +1,19 @@
 <?php
 
-$app = [];
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-$app['config'] = require_once 'config.php';
+App::bind('config', require_once 'config.php');
 
-require_once 'core/Router.php';
-require_once 'core/Request.php';
-require_once 'core/database/Connection.php';
-require_once 'core/database/QueryBuilder.php';
+App::bind('database', new QueryBuilder(
+    Connection::make(App::get('config')['database'])
+));
 
-$app['database'] = new QueryBuilder(
-    Connection::make($app['config']['database'])
-);
+function view ( $name, $data ) {
+
+    extract($data);
+
+    return require_once "views/{$name}.view.php";
+
+}
